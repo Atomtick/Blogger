@@ -10,7 +10,7 @@ namespace WinDiskBlogger
     {
         public MainWindow()
         {
-            var viewModel = new MainWindowViewModel("C:\\Users\\Value Lee\\Desktop\\C#");
+            var viewModel = new MainWindowViewModel();
             InitializeComponent();
             this.DataContext = viewModel;
         }

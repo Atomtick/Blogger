@@ -12,12 +12,26 @@ namespace Blogger
 {
     public partial class MainWindowViewModel : IDropTarget
     {
-        private string _rootDirectory;
-
-        public MainWindowViewModel(string rootDirectory)
+        public string[] Folders
         {
+            get;
+            set;
+        }
+
+        public MainWindowViewModel()
+        {
+            Folders = new[]
+            {
+                "D:\\1",
+                "D:\\2",
+                "D:\\3",
+                "D:\\4",
+            };
             TreeRoots = new ObservableCollection<FileSystemItem>();
-            BuildTree(rootDirectory);
+            foreach (var folder in Folders)
+            {
+                BuildTree(folder);
+            }
             _assembly = Assembly.GetExecutingAssembly();
         }
 
@@ -27,27 +41,17 @@ namespace Blogger
 
         public void BuildTree(string rootDirectory)
         {
-            TreeRoots.Clear();
-            TreeRoots.Add(new FileSystemItem
+            var root = new FileSystemItem
             {
                 Name = System.IO.Path.GetFileName(rootDirectory),
                 FullPath = rootDirectory,
                 Type = ItemType.Folder,
                 IsExpanded = true
-            });
+            };
 
-            BuildDirectoryTree(TreeRoots[0]);
-            //if (TreeRoots[0] != null && TreeRoots[0].Items != null)
-            //{
-            //    foreach (var item in TreeRoots[0].Items)
-            //    {
-            //        if (item.Type == ItemType.Folder)
-            //        {
-            //            item.IsExpanded = true;
-            //        }
-            //    }
-            //}
-            _rootDirectory = rootDirectory;
+            TreeRoots.Add(root);
+
+            BuildDirectoryTree(root);
         }
 
         public void ChooseNewFolder()
