@@ -10,6 +10,7 @@
     Title="{Binding Title}"
     Width="800"
     Height="450"
+    Name="self"
     WindowState="Maximized"
     mc:Ignorable="d">
 
@@ -75,7 +76,7 @@
                             x:Name="FileTreeView"
                             Height="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=ActualHeight}"
                             dd:DragDrop.DragAdornerTemplate="{StaticResource CustomDragAdorner}"
-                            dd:DragDrop.DropHandler="{Binding}"
+                            dd:DragDrop.DropHandler="{Binding RelativeSource={RelativeSource AncestorType=Window},Path=DataContext}"
                             dd:DragDrop.IsDragSource="True"
                             dd:DragDrop.IsDropTarget="True"
                             ItemsSource="{Binding Items}">

@@ -70,16 +70,26 @@ namespace Blogger
             dropInfo.Effects = DragDropEffects.Move;
         }
 
+        FileSystemItem FindRoot(FileSystemItem fileSystemItem)
+        {
+            while(fileSystemItem.Parent != null)
+            {
+                fileSystemItem = fileSystemItem.Parent;
+            }
+            return fileSystemItem;
+        }
+
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             var sourceItem = dropInfo.Data as FileSystemItem;
             var targetItem = dropInfo.TargetItem as FileSystemItem;
-            if (sourceItem != null && targetItem != null)
+            if (sourceItem != null && targetItem != null && !TreeRoots.Contains(sourceItem) && !TreeRoots.Contains(targetItem))
             {
                 // 必须是同一个文件夹内排序文件
                 if (string.Compare(System.IO.Path.GetDirectoryName(sourceItem.FullPath), System.IO.Path.GetDirectoryName(targetItem.FullPath), true) == 0)
                 {
-                    var success = FindParent(sourceItem, TreeRoots[0], out var parent);
+                    // 
+                    var success = FindParent(sourceItem, FindRoot(sourceItem), out var parent);
                     if (success && parent != null)
                     {
                         parent.Items.Move(parent.Items.IndexOf(sourceItem), dropInfo.InsertIndex);
@@ -199,6 +209,7 @@ namespace Blogger
                             FullPath = item,
                             Type = ItemType.Folder
                         };
+                        newItem.Parent = parent;
                         parent.Items.Add(newItem);
                     }
                     else if (files.Contains(item))
@@ -209,6 +220,7 @@ namespace Blogger
                             FullPath = item,
                             Type = ItemType.File
                         };
+                        newItem.Parent = parent;
                         parent.Items.Add(newItem);
                     }
                 }

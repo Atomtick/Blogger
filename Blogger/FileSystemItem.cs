@@ -21,6 +21,8 @@ namespace WinDiskBlogger
 
         public ObservableCollection<FileSystemItem> Items { get; set; }
 
+        public FileSystemItem Parent { get; set; }
+
         public string Name
         {
             get { return _name; }
