@@ -6,7 +6,7 @@
     xmlns:dd="urn:gong-wpf-dragdrop"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xp="https://github.com/Value-Lee/XamlPearls"
+    xmlns:xp="https://github.com/leoleecs/XamlPearls"
     Name="self"
     Title="{Binding Title}"
     Width="800"
