@@ -6,10 +6,10 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <Authors>LeoLee</Authors>
+    <Authors>Atomtick</Authors>
 	<AssemblyVersion>1.0.0.1</AssemblyVersion>
 	<Title>$(AssemblyName)</Title>
-	<Company>Leoleecs Co., Ltd.</Company>
+	<Company>Atomtick Co., Ltd.</Company>
 	<ApplicationIcon>blogger.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -17,7 +17,7 @@
     <None Remove="blogger.ico" />
   </ItemGroup>
 	<ItemGroup>
-		<AssemblyMetadata Include="Email" Value="leoleecs@icloud.com" />
+		<AssemblyMetadata Include="Email" Value="li.liuwei@icloud.com" />
 		<AssemblyMetadata Include="Author" Value="$(Authors)" />
 		<AssemblyMetadata Include="WeChat" Value="value417" />
 	</ItemGroup>
@@ -36,6 +36,11 @@
     <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
     <PackageReference Include="Svg" Version="3.4.7" />
     <PackageReference Include="XamlPearls" Version="2.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Configs.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -3,61 +3,157 @@ using GongSolutions.Wpf.DragDrop;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using WinDiskBlogger;
+using System.Text.Json;
 
 namespace Blogger
 {
     public partial class MainWindowViewModel : IDropTarget
     {
-        public string[] Folders
-        {
-            get;
-            set;
-        }
+        private readonly string[] _folders;
 
         public MainWindowViewModel()
         {
-            Folders = new[]
-            {
-                "D:\\1",
-                "D:\\2",
-                "D:\\3",
-                "D:\\4",
-            };
-            TreeRoots = new ObservableCollection<FileSystemItem>();
-            foreach (var folder in Folders)
-            {
-                BuildTree(folder);
-            }
             _assembly = Assembly.GetExecutingAssembly();
+            _folders = JsonSerializer.Deserialize<string[]>(
+                File.ReadAllText(Path.Combine(Path.GetDirectoryName(_assembly.Location), "configs.json"))
+            );
+            TreeRoots = new ObservableCollection<FileSystemItem>();
+            Build();
         }
 
         public ObservableCollection<NavItem> NavItems { get; set; }
 
         public ObservableCollection<FileSystemItem> TreeRoots { get; private set; }
 
-        public void BuildTree(string rootDirectory)
+        #region Build
+
+        private void Build()
         {
-            var root = new FileSystemItem
+            foreach (var folder in _folders)
             {
-                Name = System.IO.Path.GetFileName(rootDirectory),
-                FullPath = rootDirectory,
-                Type = ItemType.Folder,
-                IsExpanded = true
-            };
+                TreeRoots.Add(BuildTree(folder));
+            }
+        }
 
-            TreeRoots.Add(root);
+        private FileSystemItem BuildTree(string rootDirectory)
+        {
+            if (Directory.Exists(rootDirectory))
+            {
+                var root = new FileSystemItem
+                {
+                    Name = System.IO.Path.GetFileName(rootDirectory),
+                    FullPath = rootDirectory,
+                    Type = ItemType.Folder,
+                    IsExpanded = true,
+                };
 
-            BuildDirectoryTree(root);
+                BuildDirectoryTree(root);
+                return root;
+            }
+            return null;
+        }
+
+        private void BuildDirectoryTree(FileSystemItem root)
+        {
+            try
+            {
+                var orderInfo = FileOrderManager.Instance.LoadOrder(root.FullPath);
+
+                var dirs = Directory.GetDirectories(root.FullPath);
+                var files = Directory
+                    .GetFiles(root.FullPath)
+                    .Remove(Path.Combine(root.FullPath, FileOrderManager.ORDER_FILE_NAME))
+                    .Where(x => IsIgnored(x) == false);
+
+                var items = dirs.Concat(files).ToList();
+                items.Sort(
+                    (x, y) =>
+                    {
+                        bool xRet = orderInfo.TryGetValue(x, out var xOrder);
+                        bool yRet = orderInfo.TryGetValue(y, out var yOrder);
+
+                        if (xRet && yRet)
+                        {
+                            return xOrder - yOrder;
+                        }
+                        else if (xRet == false && yRet)
+                        {
+                            return -1;
+                        }
+                        else if (xRet && yRet == false)
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            return string.Compare(x, y, true);
+                        }
+                    }
+                );
+
+                foreach (var item in items)
+                {
+                    if (dirs.Contains(item))
+                    {
+                        var dirInfo = new DirectoryInfo(item);
+                        var newItem = new FileSystemItem
+                        {
+                            Name = dirInfo.Name,
+                            FullPath = item,
+                            Type = ItemType.Folder,
+                        };
+                        newItem.Parent = root;
+                        root.Items.Add(newItem);
+                    }
+                    else if (files.Contains(item))
+                    {
+                        var newItem = new FileSystemItem
+                        {
+                            Name = System.IO.Path.GetFileName(item),
+                            FullPath = item,
+                            Type = ItemType.File,
+                        };
+                        newItem.Parent = root;
+                        root.Items.Add(newItem);
+                    }
+                }
+
+                foreach (var dir in root.Items.Where(x => x.Type == ItemType.Folder))
+                {
+                    BuildDirectoryTree(dir); // 递归构建子目录树
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // 处理访问被拒绝的情况（例如系统文件夹）
+            }
+        }
+
+        #endregion
+       
+        public string[] Extensions => [".txt", ".docx", ".xlsx", ".pdf", ".md", ".zip", ".rar"];
+
+        private bool IsIgnored(string fileName)
+        {
+            if (Extensions.Any(x => x.Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase)))
+            {
+                return false;
+            }
+            return true;
         }
 
         public void ChooseNewFolder()
         {
             var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
-            if (dialog.ShowDialog() == true && string.IsNullOrWhiteSpace(dialog.SelectedPath) == false)
+            if (
+                dialog.ShowDialog() == true
+                && string.IsNullOrWhiteSpace(dialog.SelectedPath) == false
+            )
             {
                 BuildTree(dialog.SelectedPath);
             }
@@ -72,7 +168,7 @@ namespace Blogger
 
         FileSystemItem FindRoot(FileSystemItem fileSystemItem)
         {
-            while(fileSystemItem.Parent != null)
+            while (fileSystemItem.Parent != null)
             {
                 fileSystemItem = fileSystemItem.Parent;
             }
@@ -83,17 +179,36 @@ namespace Blogger
         {
             var sourceItem = dropInfo.Data as FileSystemItem;
             var targetItem = dropInfo.TargetItem as FileSystemItem;
-            if (sourceItem != null && targetItem != null && !TreeRoots.Contains(sourceItem) && !TreeRoots.Contains(targetItem))
+            if(sourceItem == targetItem)
+            {
+                return;
+            }
+
+            if (
+                sourceItem != null
+                && targetItem != null
+                && !TreeRoots.Contains(sourceItem)
+                && !TreeRoots.Contains(targetItem)
+            )
             {
                 // 必须是同一个文件夹内排序文件
-                if (string.Compare(System.IO.Path.GetDirectoryName(sourceItem.FullPath), System.IO.Path.GetDirectoryName(targetItem.FullPath), true) == 0)
+                if (
+                    string.Compare(
+                        System.IO.Path.GetDirectoryName(sourceItem.FullPath),
+                        System.IO.Path.GetDirectoryName(targetItem.FullPath),
+                        true
+                    ) == 0
+                )
                 {
-                    // 
+                    //
                     var success = FindParent(sourceItem, FindRoot(sourceItem), out var parent);
                     if (success && parent != null)
                     {
                         parent.Items.Move(parent.Items.IndexOf(sourceItem), dropInfo.InsertIndex);
-                        FileOrderManager.Instance.SaveOrder(parent.FullPath, parent.Items.Select(x => x.FullPath));
+                        FileOrderManager.Instance.SaveOrder(
+                            parent.FullPath,
+                            parent.Items.Select(x => x.FullPath)
+                        );
                     }
                 }
 
@@ -137,7 +252,9 @@ namespace Blogger
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
                         // Windows 下必须设置 UseShellExecute 为 true 才能调用默认程序
-                        Process.Start(new ProcessStartInfo(item.FullPath) { UseShellExecute = true });
+                        Process.Start(
+                            new ProcessStartInfo(item.FullPath) { UseShellExecute = true }
+                        );
                     }
                     else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                     {
@@ -165,77 +282,6 @@ namespace Blogger
             }
         }
 
-        private void BuildDirectoryTree(FileSystemItem parent)
-        {
-            try
-            {
-                var orderInfo = FileOrderManager.Instance.LoadOrder(parent.FullPath);
-
-                var dirs = Directory.GetDirectories(parent.FullPath);
-                var files = Directory.GetFiles(parent.FullPath).Remove(Path.Combine(parent.FullPath, FileOrderManager.ORDER_FILE_NAME));
-
-                var items = dirs.Concat(files).ToList();
-                items.Sort((x, y) =>
-                {
-                    bool xRet = orderInfo.TryGetValue(x, out var xOrder);
-                    bool yRet = orderInfo.TryGetValue(y, out var yOrder);
-
-                    if (xRet && yRet)
-                    {
-                        return xOrder - yOrder;
-                    }
-                    else if (xRet == false && yRet)
-                    {
-                        return -1;
-                    }
-                    else if (xRet && yRet == false)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        return string.Compare(x, y, true);
-                    }
-                });
-
-                foreach (var item in items)
-                {
-                    if (dirs.Contains(item))
-                    {
-                        var dirInfo = new DirectoryInfo(item);
-                        var newItem = new FileSystemItem
-                        {
-                            Name = dirInfo.Name,
-                            FullPath = item,
-                            Type = ItemType.Folder
-                        };
-                        newItem.Parent = parent;
-                        parent.Items.Add(newItem);
-                    }
-                    else if (files.Contains(item))
-                    {
-                        var newItem = new FileSystemItem
-                        {
-                            Name = System.IO.Path.GetFileName(item),
-                            FullPath = item,
-                            Type = ItemType.File
-                        };
-                        newItem.Parent = parent;
-                        parent.Items.Add(newItem);
-                    }
-                }
-
-                foreach (var dir in parent.Items.Where(x => x.Type == ItemType.Folder))
-                {
-                    BuildDirectoryTree(dir); // 递归构建子目录树
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // 处理访问被拒绝的情况（例如系统文件夹）
-            }
-        }
-
         private bool CanChangeFileName(ObservableCollection<FileSystemItem> items)
         {
             try
@@ -243,7 +289,13 @@ namespace Blogger
                 for (var i = 0; i < items.Count; i++)
                 {
                     if (items[i].Type == ItemType.File)
-                        File.Open(items[i].FullPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None).Close();
+                        File.Open(
+                                items[i].FullPath,
+                                FileMode.Open,
+                                FileAccess.ReadWrite,
+                                FileShare.None
+                            )
+                            .Close();
                 }
             }
             catch
@@ -253,7 +305,11 @@ namespace Blogger
             return true;
         }
 
-        private bool FindParent(FileSystemItem itemToFind, FileSystemItem root, out FileSystemItem parent)
+        private bool FindParent(
+            FileSystemItem itemToFind,
+            FileSystemItem root,
+            out FileSystemItem parent
+        )
         {
             if (root == itemToFind)
             {
