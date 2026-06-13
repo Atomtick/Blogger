@@ -1,0 +1,10 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <config name="System">
+	  <config name="Folder1" initial_value="C:\OneDrive\Atomtick\工业控制" type="Folder"></config>
+	  <config name="Folder2" initial_value="C:\OneDrive\Atomtick\公共基础" type="Folder"></config>
+	  <config name="Folder3" initial_value="C:\OneDrive\Atomtick\金融网络" type="Folder"></config>
+	  <config name="Folder4" initial_value="C:\OneDrive\Atomtick\英语数学" type="Folder"></config>
+	  <config name="Folder5" initial_value="C:\OneDrive\Atomtick\我的创作" type="Folder"></config>
+  </config>
+</root>

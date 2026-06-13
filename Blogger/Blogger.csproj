@@ -34,6 +34,8 @@
     <PackageReference Include="MAB.DotIgnore" Version="3.0.2" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
+    <PackageReference Include="SCADA.Common" Version="2026.6.13.1" />
+    <PackageReference Include="SCADA.Configuration" Version="2026.6.13.1" />
     <PackageReference Include="Svg" Version="3.4.7" />
     <PackageReference Include="XamlPearls" Version="2.0.3" />
   </ItemGroup>

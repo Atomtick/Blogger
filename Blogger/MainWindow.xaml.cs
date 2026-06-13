@@ -1,5 +1,7 @@
 ﻿using Blogger;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Data;
 
 namespace WinDiskBlogger
 {
@@ -14,5 +16,10 @@ namespace WinDiskBlogger
             InitializeComponent();
             this.DataContext = viewModel;
         }
+    }
+
+    public class IndexConverter : IValueConverter
+    {
+
     }
 }
