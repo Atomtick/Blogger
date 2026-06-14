@@ -1,7 +1,7 @@
-﻿using Blogger;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using Blogger;
 
 namespace WinDiskBlogger
 {
@@ -18,8 +18,8 @@ namespace WinDiskBlogger
         }
     }
 
-    public class IndexConverter : IValueConverter
-    {
+    //public class IndexConverter : IValueConverter
+    //{
 
-    }
+    //}
 }

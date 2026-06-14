@@ -1,141 +1,141 @@
 ﻿<Window
-    x:Class="WinDiskBlogger.MainWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dd="urn:gong-wpf-dragdrop"
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xp="https://github.com/leoleecs/XamlPearls"
-    Name="self"
-    Title="{Binding Title}"
-    Width="800"
-    Height="450"
-    WindowState="Maximized"
-    mc:Ignorable="d">
+  x:Class="WinDiskBlogger.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:dd="urn:gong-wpf-dragdrop"
+  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:xp="https://github.com/leoleecs/XamlPearls"
+  Name="self"
+  Title="{Binding Title}"
+  Width="800"
+  Height="450"
+  WindowState="Maximized"
+  mc:Ignorable="d"
+>
+  <Window.Resources>
+    <DataTemplate x:Key="CustomDragAdorner">
+      <Border
+        Padding="10"
+        Background="White"
+        BorderBrush="LightGray"
+        BorderThickness="1"
+        CornerRadius="4"
+      >
+        <Border.Effect>
+          <DropShadowEffect BlurRadius="10" Opacity="0.4" ShadowDepth="5" Color="Black" />
+        </Border.Effect>
 
-    <Window.Resources>
-        <DataTemplate x:Key="CustomDragAdorner">
-            <Border
-                Padding="10"
-                Background="White"
-                BorderBrush="LightGray"
-                BorderThickness="1"
-                CornerRadius="4">
-                <Border.Effect>
-                    <DropShadowEffect
-                        BlurRadius="10"
-                        Opacity="0.4"
-                        ShadowDepth="5"
-                        Color="Black" />
-                </Border.Effect>
+        <StackPanel Orientation="Horizontal">
+          <TextBlock FontWeight="Bold" Foreground="#555" Text="Moving: " />
+          <TextBlock Foreground="Black" Text="{Binding Name}" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </Window.Resources>
+  <Grid>
+    <DockPanel>
+      <Menu DockPanel.Dock="Top">
+        <MenuItem Header="杂项">
+          <MenuItem Header="转换ICO">
+            <i:Interaction.Triggers>
+              <i:EventTrigger EventName="Click">
+                <xp:CallMethodAction MethodName="ChoosePngOrSvg" TargetObject="{Binding}" />
+              </i:EventTrigger>
+            </i:Interaction.Triggers>
+          </MenuItem>
+          <MenuItem Header="检查ICO图层数量">
+            <i:Interaction.Triggers>
+              <i:EventTrigger EventName="Click">
+                <xp:CallMethodAction MethodName="CheckIconFrames" TargetObject="{Binding}" />
+              </i:EventTrigger>
+            </i:Interaction.Triggers>
+          </MenuItem>
+        </MenuItem>
+      </Menu>
 
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-                        FontWeight="Bold"
-                        Foreground="#555"
-                        Text="Moving: " />
-                    <TextBlock Foreground="Black" Text="{Binding Name}" />
-                </StackPanel>
-            </Border>
-        </DataTemplate>
-    </Window.Resources>
-    <Grid>
-        <DockPanel>
-            <Menu DockPanel.Dock="Top">
-                <MenuItem Header="杂项">
-                    <MenuItem Header="转换ICO">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Click">
-                                <xp:CallMethodAction MethodName="ChoosePngOrSvg" TargetObject="{Binding}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </MenuItem>
-                    <MenuItem Header="检查ICO图层数量">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Click">
-                                <xp:CallMethodAction MethodName="CheckIconFrames" TargetObject="{Binding}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </MenuItem>
-                </MenuItem>
-            </Menu>
-
-            <ListBox Name="lb" ItemsSource="{Binding TreeRoots}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"
-                            Height="{Binding ElementName=lb, Path=ActualHeight}"
-                            VerticalAlignment="Top"
-                            />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TreeView
-                            HorizontalAlignment="Left"
-                            Width="400"
-                            x:Name="FileTreeView"
-                            Height="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=ActualHeight}"
-                            dd:DragDrop.DragAdornerTemplate="{StaticResource CustomDragAdorner}"
-                            dd:DragDrop.DropHandler="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}"
-                            dd:DragDrop.IsDragSource="True"
-                            dd:DragDrop.IsDropTarget="True"
-                            ItemsSource="{Binding Items}">
-
-                            <Grid.Column>
+      <ListBox Name="lb" ItemsSource="{Binding TreeRoots}">
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel
+              Orientation="Horizontal"
+              Height="{Binding ElementName=lb, Path=ActualHeight}"
+              VerticalAlignment="Top"
+            />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TreeView
+              HorizontalAlignment="Left"
+              Width="400"
+              x:Name="FileTreeView"
+              Height="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=ActualHeight}"
+              dd:DragDrop.DragAdornerTemplate="{StaticResource CustomDragAdorner}"
+              dd:DragDrop.DropHandler="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}"
+              dd:DragDrop.IsDragSource="True"
+              dd:DragDrop.IsDropTarget="True"
+              ItemsSource="{Binding Items}"
+            >
+              <!--<Grid.Column>
                                 <MultiBinding>
                                  
                                 </MultiBinding>
-                            </Grid.Column>
-                            
-                            <TreeView.ItemContainerStyle>
-                                <Style TargetType="TreeViewItem">
-                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                                </Style>
-                            </TreeView.ItemContainerStyle>
+                            </Grid.Column>-->
 
-                            <TreeView.ItemTemplate>
-                                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
-                                    <Label>
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="MouseDoubleClick">
-                                                <xp:CallMethodAction MethodName="OpenFile" TargetObject="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-                                                    <xp:Parameter Value="{Binding}" />
-                                                </xp:CallMethodAction>
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-                                        <StackPanel Margin="0,2,0,2" Orientation="Horizontal">
-                                            <TextBlock
-                                                x:Name="IconBlock"
-                                                Margin="0,0,5,0"
-                                                FontSize="15"
-                                                Foreground="Orange"
-                                                Text="📁" />
-                                            <TextBlock
-                                                MinWidth="300"
-                                                FontSize="15"
-                                                Text="{Binding Name, Mode=OneWay}" />
-                                        </StackPanel>
-                                    </Label>
+              <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                  <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                  <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                </Style>
+              </TreeView.ItemContainerStyle>
 
-                                    <HierarchicalDataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding Type}" Value="File">
-                                            <Setter TargetName="IconBlock" Property="Text" Value="📄" />
-                                            <Setter TargetName="IconBlock" Property="Foreground" Value="Gray" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Type}" Value="Drive">
-                                            <Setter TargetName="IconBlock" Property="Text" Value="💿" />
-                                        </DataTrigger>
-                                    </HierarchicalDataTemplate.Triggers>
-                                </HierarchicalDataTemplate>
-                            </TreeView.ItemTemplate>
-                        </TreeView>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+              <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                  <Label>
+                    <i:Interaction.Triggers>
+                      <i:EventTrigger EventName="MouseDoubleClick">
+                        <xp:CallMethodAction
+                          MethodName="OpenFile"
+                          TargetObject="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                        >
+                          <xp:Parameter Value="{Binding}" />
+                        </xp:CallMethodAction>
+                      </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <StackPanel Margin="0,2,0,2" Orientation="Horizontal">
+                      <TextBlock
+                        x:Name="IconBlock"
+                        Margin="0,0,5,0"
+                        FontSize="15"
+                        Foreground="Orange"
+                        Text="📁"
+                      />
+                      <TextBlock
+                        FontFamily="./Assets/#Courier Prime"
+                        MinWidth="300"
+                        FontSize="15"
+                        Text="{Binding Name, Mode=OneWay}"
+                      />
+                    </StackPanel>
+                  </Label>
 
-            </ListBox>
-        </DockPanel>
-    </Grid>
+                  <HierarchicalDataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding Type}" Value="File">
+                      <Setter TargetName="IconBlock" Property="Text" Value="📄" />
+                      <Setter TargetName="IconBlock" Property="Foreground" Value="Gray" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Type}" Value="Drive">
+                      <Setter TargetName="IconBlock" Property="Text" Value="💿" />
+                    </DataTrigger>
+                  </HierarchicalDataTemplate.Triggers>
+                </HierarchicalDataTemplate>
+              </TreeView.ItemTemplate>
+            </TreeView>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </DockPanel>
+  </Grid>
 </Window>

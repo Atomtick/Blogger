@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\CourierPrime-Regular.ttf" />
     <None Remove="blogger.ico" />
   </ItemGroup>
 	<ItemGroup>
@@ -38,6 +39,11 @@
     <PackageReference Include="SCADA.Configuration" Version="2026.6.13.1" />
     <PackageReference Include="Svg" Version="3.4.7" />
     <PackageReference Include="XamlPearls" Version="2.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\CourierPrime-Regular.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <None Update="Configs.json">
