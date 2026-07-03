@@ -5,6 +5,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:dd="urn:gong-wpf-dragdrop"
   xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:local="clr-namespace:WinDiskBlogger"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:xp="https://github.com/leoleecs/XamlPearls"
   Name="self"
@@ -15,6 +16,7 @@
   mc:Ignorable="d"
 >
   <Window.Resources>
+    <local:FileIconConverter x:Key="FileIconConverter" />
     <DataTemplate x:Key="CustomDragAdorner">
       <Border
         Padding="10"
@@ -55,39 +57,47 @@
         </MenuItem>
       </Menu>
 
-      <ListBox Name="lb" ItemsSource="{Binding TreeRoots}">
+      <ListBox
+        Name="lb"
+        ItemsSource="{Binding TreeRoots}"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+      >
         <ListBox.ItemsPanel>
           <ItemsPanelTemplate>
-            <StackPanel
-              Orientation="Horizontal"
+            <UniformGrid
               Height="{Binding ElementName=lb, Path=ActualHeight}"
               VerticalAlignment="Top"
+              Rows="1"
             />
           </ItemsPanelTemplate>
         </ListBox.ItemsPanel>
+        <ListBox.ItemContainerStyle>
+          <Style TargetType="ListBoxItem">
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+          </Style>
+        </ListBox.ItemContainerStyle>
         <ListBox.ItemTemplate>
           <DataTemplate>
             <TreeView
-              HorizontalAlignment="Left"
-              Width="400"
               x:Name="FileTreeView"
               Height="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=ActualHeight}"
+              HorizontalAlignment="Left"
               dd:DragDrop.DragAdornerTemplate="{StaticResource CustomDragAdorner}"
               dd:DragDrop.DropHandler="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}"
               dd:DragDrop.IsDragSource="True"
               dd:DragDrop.IsDropTarget="True"
               ItemsSource="{Binding Items}"
             >
-              <!--<Grid.Column>
-                                <MultiBinding>
-                                 
-                                </MultiBinding>
-                            </Grid.Column>-->
-
               <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
                   <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                   <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                  <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+                  <EventSetter
+                    Event="RequestBringIntoView"
+                    Handler="TreeViewItem_RequestBringIntoView"
+                  />
                 </Style>
               </TreeView.ItemContainerStyle>
 
@@ -105,31 +115,26 @@
                       </i:EventTrigger>
                     </i:Interaction.Triggers>
                     <StackPanel Margin="0,2,0,2" Orientation="Horizontal">
+                      <Viewbox Width="18" Height="18" Margin="0,0,4,0" VerticalAlignment="Center">
+                        <Image>
+                          <Image.Source>
+                            <MultiBinding Converter="{StaticResource FileIconConverter}">
+                              <Binding Path="Name" />
+                              <Binding Path="Type" />
+                              <Binding Path="IsExpanded" />
+                            </MultiBinding>
+                          </Image.Source>
+                        </Image>
+                      </Viewbox>
                       <TextBlock
-                        x:Name="IconBlock"
-                        Margin="0,0,5,0"
-                        FontSize="15"
-                        Foreground="Orange"
-                        Text="📁"
-                      />
-                      <TextBlock
+                        MinWidth="1000"
+                        VerticalAlignment="Center"
                         FontFamily="./Assets/#Courier Prime"
-                        MinWidth="300"
-                        FontSize="15"
+                        FontSize="17"
                         Text="{Binding Name, Mode=OneWay}"
                       />
                     </StackPanel>
                   </Label>
-
-                  <HierarchicalDataTemplate.Triggers>
-                    <DataTrigger Binding="{Binding Type}" Value="File">
-                      <Setter TargetName="IconBlock" Property="Text" Value="📄" />
-                      <Setter TargetName="IconBlock" Property="Foreground" Value="Gray" />
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Type}" Value="Drive">
-                      <Setter TargetName="IconBlock" Property="Text" Value="💿" />
-                    </DataTrigger>
-                  </HierarchicalDataTemplate.Triggers>
                 </HierarchicalDataTemplate>
               </TreeView.ItemTemplate>
             </TreeView>

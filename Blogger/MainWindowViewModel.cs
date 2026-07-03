@@ -1,14 +1,14 @@
-﻿using DryIoc.ImTools;
-using GongSolutions.Wpf.DragDrop;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows;
-using WinDiskBlogger;
 using System.Text.Json;
+using System.Windows;
+using DryIoc.ImTools;
+using GongSolutions.Wpf.DragDrop;
+using WinDiskBlogger;
 
 namespace Blogger
 {
@@ -20,7 +20,9 @@ namespace Blogger
         {
             _assembly = Assembly.GetExecutingAssembly();
             _folders = JsonSerializer.Deserialize<string[]>(
-                File.ReadAllText(Path.Combine(Path.GetDirectoryName(_assembly.Location), "configs.json"))
+                File.ReadAllText(
+                    Path.Combine(Path.GetDirectoryName(_assembly.Location), "configs.json")
+                )
             );
             TreeRoots = new ObservableCollection<FileSystemItem>();
             Build();
@@ -135,12 +137,17 @@ namespace Blogger
         }
 
         #endregion
-       
+
         public string[] Extensions => [".txt", ".docx", ".xlsx", ".pdf", ".md", ".zip", ".rar"];
 
         private bool IsIgnored(string fileName)
         {
-            if (Extensions.Any(x => x.Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase)))
+            return false;
+            if (
+                Extensions.Any(x =>
+                    x.Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase)
+                )
+            )
             {
                 return false;
             }
@@ -179,7 +186,7 @@ namespace Blogger
         {
             var sourceItem = dropInfo.Data as FileSystemItem;
             var targetItem = dropInfo.TargetItem as FileSystemItem;
-            if(sourceItem == targetItem)
+            if (sourceItem == targetItem)
             {
                 return;
             }

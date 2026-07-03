@@ -1,48 +1,91 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <Authors>Atomtick</Authors>
-	<AssemblyVersion>1.0.0.1</AssemblyVersion>
-	<Title>$(AssemblyName)</Title>
-	<Company>Atomtick Co., Ltd.</Company>
-	<ApplicationIcon>blogger.ico</ApplicationIcon>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <Title>$(AssemblyName)</Title>
+    <Company>Atomtick Co., Ltd.</Company>
+    <ApplicationIcon>blogger.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\CourierPrime-Regular.ttf" />
+    <None Remove="assets\CourierPrime-Regular.ttf" />
+    <None Remove="assets\Icons\excel.png" />
+    <None Remove="assets\Icons\image.png" />
+    <None Remove="assets\Icons\markdown.png" />
+    <None Remove="assets\Icons\music.png" />
+    <None Remove="assets\Icons\pdf.png" />
+    <None Remove="assets\Icons\pptx.png" />
+    <None Remove="assets\Icons\rar.png" />
+    <None Remove="assets\Icons\txt.png" />
+    <None Remove="assets\Icons\video.png" />
+    <None Remove="assets\Icons\word.png" />
     <None Remove="blogger.ico" />
   </ItemGroup>
-	<ItemGroup>
-		<AssemblyMetadata Include="Email" Value="li.liuwei@icloud.com" />
-		<AssemblyMetadata Include="Author" Value="$(Authors)" />
-		<AssemblyMetadata Include="WeChat" Value="value417" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Content Include="blogger.ico" />
-	</ItemGroup>
-	<ItemGroup>
-	  <EmbeddedResource Include="blogger.ico">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	</ItemGroup>
+  <ItemGroup>
+    <AssemblyMetadata Include="Email" Value="li.liuwei@icloud.com" />
+    <AssemblyMetadata Include="Author" Value="$(Authors)" />
+    <AssemblyMetadata Include="WeChat" Value="value417" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="blogger.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="blogger.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
     <PackageReference Include="MAB.DotIgnore" Version="3.0.2" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
-    <PackageReference Include="SCADA.Common" Version="2026.6.13.1" />
-    <PackageReference Include="SCADA.Configuration" Version="2026.6.13.1" />
     <PackageReference Include="Svg" Version="3.4.7" />
     <PackageReference Include="XamlPearls" Version="2.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\CourierPrime-Regular.ttf">
+    <Resource Include="assets\CourierPrime-Regular.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\excel.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\folder_open.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\image.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\markdown.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\music.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\pdf.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\pptx.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\rar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\txt.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\video.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\word.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
   <ItemGroup>
@@ -50,5 +93,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>
