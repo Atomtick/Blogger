@@ -10,7 +10,6 @@
     <Title>$(AssemblyName)</Title>
     <Company>Atomtick Co., Ltd.</Company>
     <PackageIcon>blogger.png</PackageIcon>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
