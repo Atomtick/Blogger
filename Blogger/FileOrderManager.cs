@@ -37,7 +37,6 @@ namespace WinDiskBlogger
         {
             string orderFilePath = System.IO.Path.Combine(directoryPath, ORDER_FILE_NAME);
             System.IO.File.WriteAllLines(orderFilePath, itemNames);
-            File.SetAttributes(orderFilePath, File.GetAttributes(orderFilePath) | FileAttributes.Hidden);
         }
     }
 }

@@ -20,31 +20,6 @@ namespace WinDiskBlogger
             var viewModel = new MainWindowViewModel();
             InitializeComponent();
             this.DataContext = viewModel;
-
-            // 1. 在后台动态创建一个 TaskbarIcon
-            var trayIcon = new Hardcodet.Wpf.TaskbarNotification.TaskbarIcon();
-
-            // 2. 直接提取 Windows 系统自带的“信息”图标，绕过所有的路径和格式问题
-            trayIcon.IconSource = new BitmapImage(new Uri("pack://application:,,,/Blogger;component/assets/blogger.ico"));
-
-            // 3. 设置提示文字并显示
-            trayIcon.ToolTipText = "Blogger";
-            trayIcon.Visibility = Visibility.Visible;
-
-            trayIcon.TrayLeftMouseDown += (s, e) =>
-            {
-                if (this.WindowState == WindowState.Minimized)
-                {
-                    this.WindowState = WindowState.Normal;
-                    this.Activate();
-                }
-                else
-                {
-                    this.WindowState = WindowState.Minimized;
-                }
-            };
-
-
         }
 
         private void TreeViewItem_RequestBringIntoView(
@@ -71,6 +46,14 @@ namespace WinDiskBlogger
         private void MyTrayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
         {
             Application.Current.MainWindow.Show();
+        }
+
+        private void self_StateChanged(object sender, EventArgs e)
+        {
+            if(this.WindowState == WindowState.Minimized)
+            {
+                this.Hide();
+            }
         }
     }
 
