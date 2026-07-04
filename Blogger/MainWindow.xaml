@@ -15,17 +15,11 @@
     Height="450"
     Closing="self_Closing"
     ShowInTaskbar="False"
+    StateChanged="self_StateChanged"
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Icon="assets/blogger.ico">
     <Window.Resources>
-        <!--<tb:TaskbarIcon
-            x:Key="MyTrayIcon"
-            x:Name="MyTrayIcon"
-            Icon="pack://application:,,,/Blogger;component/assets/blogger.ico"
-            ToolTipText="Blogger"
-            TrayLeftMouseDown="MyTrayIcon_TrayMouseDoubleClick"
-            Visibility="Visible" />-->
         <local:FileIconConverter x:Key="FileIconConverter" />
         <DataTemplate x:Key="CustomDragAdorner">
             <Border

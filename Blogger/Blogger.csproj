@@ -9,9 +9,11 @@
     <AssemblyVersion>1.0.0.1</AssemblyVersion>
     <Title>$(AssemblyName)</Title>
     <Company>Atomtick Co., Ltd.</Company>
+    <PackageIcon>blogger.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets\blogger.png" />
     <None Remove="assets\CourierPrime-Regular.ttf" />
     <None Remove="assets\Icons\blogger.ico" />
     <None Remove="assets\Icons\excel.png" />
@@ -45,7 +47,12 @@
     <Resource Include="assets\CourierPrime-Regular.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="assets\blogger.ico">
+    <Content Include="assets\blogger.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="assets\blogger.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\Icons\excel.png">
@@ -84,8 +91,13 @@
     <Resource Include="assets\Icons\word.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Content Include="blogger.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="assets\blogger.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Update="Configs.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
