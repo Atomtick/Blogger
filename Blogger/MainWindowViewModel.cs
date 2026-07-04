@@ -26,7 +26,23 @@ namespace Blogger
             );
             TreeRoots = new ObservableCollection<FileSystemItem>();
             Build();
+
+            OpenInExplorerCommand = new DelegateCommand<FileSystemItem>(OpenInExplorer);
+            RenameCommand = new DelegateCommand<FileSystemItem>(Rename);
         }
+
+        private void Rename(FileSystemItem item)
+        {
+            
+        }
+
+        private void OpenInExplorer(FileSystemItem item)
+        {
+            Process.Start("explorer.exe", Path.GetDirectoryName(item.FullPath));
+        }
+
+        public DelegateCommand<FileSystemItem> OpenInExplorerCommand { get; }
+        public DelegateCommand<FileSystemItem> RenameCommand { get; }
 
         public ObservableCollection<NavItem> NavItems { get; set; }
 

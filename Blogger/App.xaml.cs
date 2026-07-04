@@ -22,5 +22,10 @@ namespace WinDiskBlogger
         {
             
         }
+
+        private void MyTrayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.MainWindow.Show();
+        }
     }
 }
