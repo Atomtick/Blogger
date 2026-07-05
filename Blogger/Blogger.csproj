@@ -17,6 +17,7 @@
     <None Remove="assets\CourierPrime-Regular.ttf" />
     <None Remove="assets\Icons\blogger.ico" />
     <None Remove="assets\Icons\excel.png" />
+    <None Remove="assets\Icons\exe.png" />
     <None Remove="assets\Icons\image.png" />
     <None Remove="assets\Icons\markdown.png" />
     <None Remove="assets\Icons\music.png" />
@@ -56,6 +57,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\Icons\excel.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="assets\Icons\exe.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="assets\Icons\folder_open.png">

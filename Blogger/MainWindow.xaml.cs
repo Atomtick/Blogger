@@ -50,7 +50,7 @@ namespace WinDiskBlogger
 
         private void self_StateChanged(object sender, EventArgs e)
         {
-            if(this.WindowState == WindowState.Minimized)
+            if (this.WindowState == WindowState.Minimized)
             {
                 this.Hide();
             }
@@ -82,6 +82,7 @@ namespace WinDiskBlogger
         static ImageSource FolderOpen = LoadImage(
             "pack://application:,,,/assets/Icons/folder_open.png"
         );
+        static ImageSource Exe = LoadImage("pack://application:,,,/assets/Icons/exe.png");
 
         public object Convert(
             object[] values,
@@ -148,6 +149,8 @@ namespace WinDiskBlogger
                 case ".wmv":
                 case ".flv":
                     return Video;
+                case ".exe":
+                    return Exe;
                 default:
                     return Txt;
             }
