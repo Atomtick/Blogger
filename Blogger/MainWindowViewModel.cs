@@ -25,7 +25,7 @@ namespace Blogger
                 )
             );
             TreeRoots = new ObservableCollection<FileSystemItem>();
-            Build();
+            Build().GetAwaiter().GetResult();
 
             OpenInExplorerCommand = new DelegateCommand<FileSystemItem>(OpenInExplorer);
             RenameCommand = new DelegateCommand<FileSystemItem>(Rename);
@@ -33,7 +33,6 @@ namespace Blogger
 
         private void Rename(FileSystemItem item)
         {
-            
         }
 
         private void OpenInExplorer(FileSystemItem item)
@@ -50,15 +49,15 @@ namespace Blogger
 
         #region Build
 
-        private void Build()
+        private async Task Build()
         {
             foreach (var folder in _folders)
             {
-                TreeRoots.Add(BuildTree(folder));
+                TreeRoots.Add(await BuildTree(folder));
             }
         }
 
-        private FileSystemItem BuildTree(string rootDirectory)
+        private async Task<FileSystemItem> BuildTree(string rootDirectory)
         {
             if (Directory.Exists(rootDirectory))
             {
@@ -70,22 +69,22 @@ namespace Blogger
                     IsExpanded = true,
                 };
 
-                BuildDirectoryTree(root);
+                await BuildDirectoryTree(root);
                 return root;
             }
             return null;
         }
 
-        private void BuildDirectoryTree(FileSystemItem root)
+        private async Task BuildDirectoryTree(FileSystemItem root)
         {
             try
             {
-                var orderInfo = FileOrderManager.Instance.LoadOrder(root.FullPath);
+                var orderInfo = await OrderManager.Instance.LoadOrder(root.FullPath);
 
                 var dirs = Directory.GetDirectories(root.FullPath);
                 var files = Directory
                     .GetFiles(root.FullPath)
-                    .Remove(Path.Combine(root.FullPath, FileOrderManager.ORDER_FILE_NAME))
+                    .Remove(Path.Combine(root.FullPath, OrderManager.ORDER_FILE_NAME))
                     .Where(x => IsIgnored(x) == false);
 
                 var items = dirs.Concat(files).ToList();
@@ -143,7 +142,7 @@ namespace Blogger
 
                 foreach (var dir in root.Items.Where(x => x.Type == ItemType.Folder))
                 {
-                    BuildDirectoryTree(dir); // 递归构建子目录树
+                    await BuildDirectoryTree(dir); // 递归构建子目录树
                 }
             }
             catch (UnauthorizedAccessException)
@@ -152,7 +151,7 @@ namespace Blogger
             }
         }
 
-        #endregion
+        #endregion Build
 
         public string[] Extensions => [".txt", ".docx", ".xlsx", ".pdf", ".md", ".zip", ".rar"];
 
@@ -170,7 +169,7 @@ namespace Blogger
             return true;
         }
 
-        public void ChooseNewFolder()
+        public async Task ChooseNewFolder()
         {
             var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
             if (
@@ -178,7 +177,7 @@ namespace Blogger
                 && string.IsNullOrWhiteSpace(dialog.SelectedPath) == false
             )
             {
-                BuildTree(dialog.SelectedPath);
+                await BuildTree(dialog.SelectedPath);
             }
         }
 
@@ -189,7 +188,7 @@ namespace Blogger
             dropInfo.Effects = DragDropEffects.Move;
         }
 
-        FileSystemItem FindRoot(FileSystemItem fileSystemItem)
+        private FileSystemItem FindRoot(FileSystemItem fileSystemItem)
         {
             while (fileSystemItem.Parent != null)
             {
@@ -198,40 +197,43 @@ namespace Blogger
             return fileSystemItem;
         }
 
-        void IDropTarget.Drop(IDropInfo dropInfo)
+        async void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            var sourceItem = dropInfo.Data as FileSystemItem;
-            var targetItem = dropInfo.TargetItem as FileSystemItem;
-            if (sourceItem == targetItem)
+            try
             {
-                return;
-            }
+                var sourceItem = dropInfo.Data as FileSystemItem;
+                var targetItem = dropInfo.TargetItem as FileSystemItem;
+                if (sourceItem == targetItem)
+                {
+                    return;
+                }
 
-            if (
-                sourceItem != null
-                && targetItem != null
-                && !TreeRoots.Contains(sourceItem)
-                && !TreeRoots.Contains(targetItem)
-            )
-            {
-                // 必须是同一个文件夹内排序文件
                 if (
-                    string.Compare(
-                        System.IO.Path.GetDirectoryName(sourceItem.FullPath),
-                        System.IO.Path.GetDirectoryName(targetItem.FullPath),
-                        true
-                    ) == 0
+                    sourceItem != null
+                    && targetItem != null
+                    && !TreeRoots.Contains(sourceItem)
+                    && !TreeRoots.Contains(targetItem)
                 )
                 {
-                    //
-                    var success = FindParent(sourceItem, FindRoot(sourceItem), out var parent);
-                    if (success && parent != null)
+                    // 必须是同一个文件夹内排序文件
+                    if (
+                        string.Compare(
+                            System.IO.Path.GetDirectoryName(sourceItem.FullPath),
+                            System.IO.Path.GetDirectoryName(targetItem.FullPath),
+                            true
+                        ) == 0
+                    )
                     {
-                        parent.Items.Move(parent.Items.IndexOf(sourceItem), dropInfo.InsertIndex);
-                        FileOrderManager.Instance.SaveOrder(
-                            parent.FullPath,
-                            parent.Items.Select(x => x.FullPath)
-                        );
+                        //
+                        var success = FindParent(sourceItem, FindRoot(sourceItem), out var parent);
+                        if (success && parent != null)
+                        {
+                            parent.Items.Move(parent.Items.IndexOf(sourceItem), dropInfo.InsertIndex);
+                            await OrderManager.Instance.SaveOrder(
+                                parent.FullPath,
+                                parent.Items.Select(x => x.FullPath)
+                            );
+                        }
                     }
                 }
 
@@ -256,6 +258,9 @@ namespace Blogger
                 //        }
                 //    }
                 //}
+            }
+            catch
+            {
             }
         }
 
