@@ -31,10 +31,7 @@ namespace Blogger
             RenameCommand = new DelegateCommand<FileSystemItem>(Rename);
         }
 
-        private void Rename(FileSystemItem item)
-        {
-            
-        }
+        private void Rename(FileSystemItem item) { }
 
         private void OpenInExplorer(FileSystemItem item)
         {
