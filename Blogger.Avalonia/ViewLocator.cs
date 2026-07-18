@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Blogger.Avalonia.ViewModels;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
@@ -30,9 +29,9 @@ namespace Blogger.Avalonia
             return new TextBlock { Text = "Not Found: " + name };
         }
 
-        public bool Match(object? data)
+        public bool Match(object data)
         {
-            return data is ViewModelBase;
+            throw new NotImplementedException();
         }
     }
 }
