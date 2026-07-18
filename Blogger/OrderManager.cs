@@ -5,22 +5,22 @@ using System.Text;
 
 namespace WinDiskBlogger
 {
-    internal class FileOrderManager
+    internal class OrderManager
     {
-        public static FileOrderManager Instance { get; private set; } = new FileOrderManager();
+        public static OrderManager Instance { get; private set; } = new OrderManager();
 
-        private FileOrderManager()
+        private OrderManager()
         { }
 
         public const string ORDER_FILE_NAME = ".order";
 
-        public Dictionary<string, int> LoadOrder(string directoryPath)
+        public async Task<Dictionary<string, int>> LoadOrder(string directoryPath)
         {
             var orderDict = new Dictionary<string, int>();
             string orderFilePath = System.IO.Path.Combine(directoryPath, ORDER_FILE_NAME);
             if (System.IO.File.Exists(orderFilePath))
             {
-                var lines = System.IO.File.ReadAllLines(orderFilePath);
+                var lines = await System.IO.File.ReadAllLinesAsync(orderFilePath).ConfigureAwait(false);
                 for (int i = 0; i < lines.Length; i++)
                 {
                     string fileName = lines[i].Trim();
@@ -33,10 +33,10 @@ namespace WinDiskBlogger
             return orderDict;
         }
 
-        public void SaveOrder(string directoryPath, IEnumerable<string> itemNames)
+        public async Task SaveOrder(string directoryPath, IEnumerable<string> itemNames)
         {
             string orderFilePath = System.IO.Path.Combine(directoryPath, ORDER_FILE_NAME);
-            System.IO.File.WriteAllLines(orderFilePath, itemNames);
+            await System.IO.File.WriteAllLinesAsync(orderFilePath, itemNames).ConfigureAwait(false);
         }
     }
 }
