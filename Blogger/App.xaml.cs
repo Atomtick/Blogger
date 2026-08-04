@@ -19,16 +19,29 @@ namespace WinDiskBlogger
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            _mutex = new Mutex(
+            int i;
+            for (i = 0; i < 10; i++)
+            {
+                _mutex = new Mutex(
                 initiallyOwned: true,
                 name: "1797D68E-CEAF-446B-9FCC-8AF604D570BE",
-                out _createNew
-            );
-            if (_createNew == false)
+                out _createNew);
+                if (_createNew)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(200); // 等待1秒后再次尝试获取互斥体
+                }
+            }
+
+            if (i == 10)
             {
-                Application.Current.Shutdown();
+                Shutdown();
                 return;
             }
+
             base.OnStartup(e);
 
             // 1. 在后台动态创建一个 TaskbarIcon

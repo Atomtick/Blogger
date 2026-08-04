@@ -73,24 +73,24 @@ namespace Blogger
             return null;
         }
 
-        private void BuildDirectoryTree(FileSystemItem root)
+        private async void BuildDirectoryTree(FileSystemItem root)
         {
             try
             {
-                var orderInfo = FileOrderManager.Instance.LoadOrder(root.FullPath);
+                var orderInfo = await OrderManager.Instance.LoadOrder(root.FullPath);
 
                 var dirs = Directory.GetDirectories(root.FullPath);
                 var files = Directory
                     .GetFiles(root.FullPath)
-                    .Remove(Path.Combine(root.FullPath, FileOrderManager.ORDER_FILE_NAME))
+                    .Remove(Path.Combine(root.FullPath, OrderManager.ORDER_FILE_NAME))
                     .Where(x => IsIgnored(x) == false);
 
                 var items = dirs.Concat(files).ToList();
                 items.Sort(
-                    (x, y) =>
+                     (x, y) =>
                     {
-                        bool xRet = orderInfo.TryGetValue(x, out var xOrder);
-                        bool yRet = orderInfo.TryGetValue(y, out var yOrder);
+                        bool xRet =  orderInfo.TryGetValue(x, out var xOrder);
+                        bool yRet =  orderInfo.TryGetValue(y, out var yOrder);
 
                         if (xRet && yRet)
                         {
@@ -224,8 +224,13 @@ namespace Blogger
                     var success = FindParent(sourceItem, FindRoot(sourceItem), out var parent);
                     if (success && parent != null)
                     {
-                        parent.Items.Move(parent.Items.IndexOf(sourceItem), dropInfo.InsertIndex);
-                        FileOrderManager.Instance.SaveOrder(
+                        int index = dropInfo.InsertIndex;
+                        if(index == parent.Items.Count())
+                        {
+                            index = index - 1;
+                        }
+                        parent.Items.Move(parent.Items.IndexOf(sourceItem), index);
+                        OrderManager.Instance.SaveOrder(
                             parent.FullPath,
                             parent.Items.Select(x => x.FullPath)
                         );
@@ -254,6 +259,19 @@ namespace Blogger
                 //    }
                 //}
             }
+        }
+
+
+        public void RestartApp()
+        {
+            string exepath = Path.Combine(AppContext.BaseDirectory, "Blogger.exe");
+            Process.Start(exepath);
+            Application.Current.Shutdown();
+        }
+
+        public void Shutdown()
+        {
+            Application.Current.Shutdown();
         }
 
         public void OpenFile(FileSystemItem item)

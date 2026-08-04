@@ -14,11 +14,12 @@
     Width="800"
     Height="450"
     Closing="self_Closing"
+    Icon="assets/blogger.ico"
     ShowInTaskbar="False"
     StateChanged="self_StateChanged"
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
-    mc:Ignorable="d" Icon="assets/blogger.ico">
+    mc:Ignorable="d">
     <Window.Resources>
         <local:FileIconConverter x:Key="FileIconConverter" />
         <DataTemplate x:Key="CustomDragAdorner">
@@ -49,6 +50,22 @@
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
+                <MenuItem Header="Blogger">
+                    <MenuItem Header="Restart">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <xp:CallMethodAction MethodName="RestartApp" TargetObject="{Binding}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </MenuItem>
+                    <MenuItem Header="Shutdown">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <xp:CallMethodAction MethodName="Shutdown" TargetObject="{Binding}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </MenuItem>
+                </MenuItem>
                 <MenuItem Header="杂项">
                     <MenuItem Header="转换ICO">
                         <i:Interaction.Triggers>
