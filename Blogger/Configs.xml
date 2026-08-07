@@ -20,5 +20,9 @@
       <config initial_value=".mp3" name="mp3" type="String" />
       <config initial_value=".mp4" name="mp4" type="String" />
     </config>
+	  <config name="MainWindow">
+		  <config initial_value="1" name="WidthRatio" type="Double" />
+		  <config initial_value="1" name="HeightRatio" type="Double" />
+	  </config>
   </config>
 </root>

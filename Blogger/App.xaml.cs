@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Atomtick.Configuration;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -41,9 +42,8 @@ namespace WinDiskBlogger
                 Shutdown();
                 return;
             }
-
+            this.Properties["configs"] = new PrimitiveConfigSource("configs.db");
             base.OnStartup(e);
-
             // 1. 在后台动态创建一个 TaskbarIcon
             var trayIcon = new Hardcodet.Wpf.TaskbarNotification.TaskbarIcon();
 

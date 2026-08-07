@@ -1,10 +1,13 @@
-﻿using System.Globalization;
+﻿using Atomtick.Configuration;
+using Blogger;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Forms;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Blogger;
 using static System.Net.Mime.MediaTypeNames;
 using Application = System.Windows.Application;
 
@@ -39,6 +42,15 @@ namespace WinDiskBlogger
 
         private void self_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            var configSource = Application.Current.Properties["configs"] as PrimitiveConfigSource;
+            // 获取当前窗口的句柄
+            var interopHelper = new WindowInteropHelper(this);
+            var currentScreen = Screen.FromHandle(interopHelper.Handle);
+            configSource.BeginTransaction(out var transactionId);
+            configSource.Write(transactionId, "Blogger.MainWindow.WidthRatio", (this.ActualWidth / currentScreen.WorkingArea.Width).ToString(".00"));
+            configSource.Write(transactionId, "Blogger.MainWindow.HeightRatio", (this.ActualHeight / currentScreen.WorkingArea.Height).ToString(".00"));
+            configSource.CommitTransaction(transactionId);
+
             e.Cancel = true;
             this.WindowState = WindowState.Minimized;
         }
@@ -54,6 +66,22 @@ namespace WinDiskBlogger
             {
                 this.Hide();
             }
+        }
+
+        private void self_Loaded(object sender, RoutedEventArgs e)
+        {
+            var interopHelper = new WindowInteropHelper(this);
+            var currentScreen = Screen.FromHandle(interopHelper.Handle);
+
+            var configSource = Application.Current.Properties["configs"] as PrimitiveConfigSource;
+
+            var width_i = configSource.SelectConfigItem("Blogger.MainWindow.WidthRatio");
+            var width = configSource.Read(width_i).ToDouble();
+            var height_i = configSource.SelectConfigItem("Blogger.MainWindow.HeightRatio");
+            var height = configSource.Read(height_i).ToDouble();
+
+            this.Width = currentScreen.WorkingArea.Width * width;
+            this.Height = currentScreen.WorkingArea.Height * height;
         }
     }
 
