@@ -2,15 +2,15 @@
 
 namespace WinDiskBlogger
 {
-    public class FileSystemItem : BindableBase
+    public class ObservableFileSystemItem : BindableBase
     {
         private string _fullPath;
         private ItemType _itemType;
         private string _name;
 
-        public FileSystemItem()
+        public ObservableFileSystemItem()
         {
-            Items = new ObservableCollection<FileSystemItem>();
+            Items = new ObservableCollection<ObservableFileSystemItem>();
         }
 
         public string FullPath
@@ -19,9 +19,9 @@ namespace WinDiskBlogger
             set { SetProperty(ref _fullPath, value); }
         }
 
-        public ObservableCollection<FileSystemItem> Items { get; set; }
+        public ObservableCollection<ObservableFileSystemItem> Items { get; set; }
 
-        public FileSystemItem Parent { get; set; }
+        public ObservableFileSystemItem Parent { get; set; }
 
         public string Name
         {

@@ -11,6 +11,12 @@
     <Company>Atomtick Co., Ltd.</Company>
     <PackageIcon>blogger.png</PackageIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\liliu\.nuget\packages\dryioc\5.4.3\contentFiles\cs\netstandard2.0\DryIoc\Container.cs" />
+    <Compile Remove="C:\Users\liliu\.nuget\packages\dryioc\5.4.3\contentFiles\cs\netstandard2.0\DryIoc\Expression.cs" />
+    <Compile Remove="C:\Users\liliu\.nuget\packages\dryioc\5.4.3\contentFiles\cs\netstandard2.0\DryIoc\FastExpressionCompiler.cs" />
+    <Compile Remove="C:\Users\liliu\.nuget\packages\dryioc\5.4.3\contentFiles\cs\netstandard2.0\DryIoc\ImTools.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="assets\blogger.png" />
@@ -51,11 +57,15 @@
   <ItemGroup>
     <PackageReference Include="Atomtick.Common" Version="2026.8.7.1" />
     <PackageReference Include="Atomtick.Configuration" Version="2026.8.7.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="DryIoc" Version="5.4.3" />
+    <PackageReference Include="DryIoc.dll" Version="5.4.3" />
     <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.4.1" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="MAB.DotIgnore" Version="3.0.2" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+    <PackageReference Include="Prism.Core" Version="9.0.537" />
     <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
     <PackageReference Include="Svg" Version="3.4.7" />

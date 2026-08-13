@@ -5,6 +5,8 @@ VisualStudioVersion = 18.4.11605.240
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogger", "Blogger\Blogger.csproj", "{436ED4FA-AED0-4984-BBDB-EC8CF0F06A86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blogger.Avalonia", "Blogger.Avalonia\Blogger.Avalonia.csproj", "{22F0DFF1-9554-4D16-A26E-B7351C27D501}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{436ED4FA-AED0-4984-BBDB-EC8CF0F06A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{436ED4FA-AED0-4984-BBDB-EC8CF0F06A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{436ED4FA-AED0-4984-BBDB-EC8CF0F06A86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22F0DFF1-9554-4D16-A26E-B7351C27D501}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22F0DFF1-9554-4D16-A26E-B7351C27D501}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22F0DFF1-9554-4D16-A26E-B7351C27D501}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22F0DFF1-9554-4D16-A26E-B7351C27D501}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

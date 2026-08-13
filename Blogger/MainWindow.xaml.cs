@@ -1,5 +1,6 @@
 ﻿using Atomtick.Configuration;
 using Blogger;
+using DryIoc;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -20,7 +21,7 @@ namespace WinDiskBlogger
     {
         public MainWindow()
         {
-            var viewModel = new MainWindowViewModel();
+            var viewModel = App.Container.Resolve<OrderManager>();
             InitializeComponent();
             this.DataContext = viewModel;
         }
@@ -47,8 +48,8 @@ namespace WinDiskBlogger
             var interopHelper = new WindowInteropHelper(this);
             var currentScreen = Screen.FromHandle(interopHelper.Handle);
             configSource.BeginTransaction(out var transactionId);
-            configSource.Write(transactionId, "Blogger.MainWindow.WidthRatio", (this.ActualWidth / currentScreen.WorkingArea.Width).ToString(".00"));
-            configSource.Write(transactionId, "Blogger.MainWindow.HeightRatio", (this.ActualHeight / currentScreen.WorkingArea.Height).ToString(".00"));
+            configSource.Write(transactionId, "MainWindow.WidthRatio", (this.ActualWidth / currentScreen.WorkingArea.Width).ToString(".00"));
+            configSource.Write(transactionId, "MainWindow.HeightRatio", (this.ActualHeight / currentScreen.WorkingArea.Height).ToString(".00"));
             configSource.CommitTransaction(transactionId);
 
             e.Cancel = true;
@@ -75,9 +76,9 @@ namespace WinDiskBlogger
 
             var configSource = Application.Current.Properties["configs"] as PrimitiveConfigSource;
 
-            var width_i = configSource.SelectConfigItem("Blogger.MainWindow.WidthRatio");
+            var width_i = configSource.SelectConfigItem("MainWindow.WidthRatio");
             var width = configSource.Read(width_i).ToDouble();
-            var height_i = configSource.SelectConfigItem("Blogger.MainWindow.HeightRatio");
+            var height_i = configSource.SelectConfigItem("MainWindow.HeightRatio");
             var height = configSource.Read(height_i).ToDouble();
 
             this.Width = currentScreen.WorkingArea.Width * width;

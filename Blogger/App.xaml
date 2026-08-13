@@ -1,15 +1,14 @@
-﻿<prism:PrismApplication
+﻿<Application
     x:Class="WinDiskBlogger.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:WinDiskBlogger"
-    xmlns:prism="http://prismlibrary.com/"
-    xmlns:tb="http://www.hardcodet.net/taskbar">
-    <prism:PrismApplication.Resources>
+    xmlns:tb="http://www.hardcodet.net/taskbar" StartupUri="./MainWindow.xaml.cs">
+    <Application.Resources>
         <ResourceDictionary>
             <!--  定义全局字体别名：uri定位到文件，#后跟字体内部实际名称  -->
             <FontFamily x:Key="MyFont">./Assets/#Courier Prime</FontFamily>
 
         </ResourceDictionary>
-    </prism:PrismApplication.Resources>
-</prism:PrismApplication>
+    </Application.Resources>
+</Application>

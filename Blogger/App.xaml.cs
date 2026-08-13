@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using DryIoc;
 
 namespace WinDiskBlogger
 {
@@ -10,10 +11,8 @@ namespace WinDiskBlogger
     /// </summary>
     public partial class App
     {
-        protected override Window CreateShell()
-        {
-            return new MainWindow();
-        }
+
+        public static Container Container { get; private set; } = new Container();
 
         private Mutex _mutex; // 定义成字段，防止被释放。
         private bool _createNew; // 在Application的Exit的事件处理程序中用于区分是单例正常退出还是多开退出
@@ -43,6 +42,12 @@ namespace WinDiskBlogger
                 return;
             }
             this.Properties["configs"] = new PrimitiveConfigSource("configs.db");
+
+
+            Container.Register<OrderManager, OrderManager>();
+
+
+
             base.OnStartup(e);
             // 1. 在后台动态创建一个 TaskbarIcon
             var trayIcon = new Hardcodet.Wpf.TaskbarNotification.TaskbarIcon();
@@ -83,6 +88,5 @@ namespace WinDiskBlogger
             };
         }
 
-        protected override void RegisterTypes(IContainerRegistry containerRegistry) { }
     }
 }

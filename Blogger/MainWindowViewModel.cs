@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
-using DryIoc.ImTools;
 using GongSolutions.Wpf.DragDrop;
 using WinDiskBlogger;
 
@@ -15,8 +14,9 @@ namespace Blogger
     public partial class MainWindowViewModel : IDropTarget
     {
         private readonly string[] _folders;
+        private readonly OrderManager _orderManager;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(OrderManager orderManager)
         {
             _assembly = Assembly.GetExecutingAssembly();
             _folders = JsonSerializer.Deserialize<string[]>(
@@ -24,26 +24,27 @@ namespace Blogger
                     Path.Combine(Path.GetDirectoryName(_assembly.Location), "configs.json")
                 )
             );
-            TreeRoots = new ObservableCollection<FileSystemItem>();
+            TreeRoots = new ObservableCollection<ObservableFileSystemItem>();
             Build();
 
-            OpenInExplorerCommand = new DelegateCommand<FileSystemItem>(OpenInExplorer);
-            RenameCommand = new DelegateCommand<FileSystemItem>(Rename);
+            OpenInExplorerCommand = new DelegateCommand<ObservableFileSystemItem>(OpenInExplorer);
+            RenameCommand = new DelegateCommand<ObservableFileSystemItem>(Rename);
+            _orderManager = orderManager;
         }
 
-        private void Rename(FileSystemItem item) { }
+        private void Rename(ObservableFileSystemItem item) { }
 
-        private void OpenInExplorer(FileSystemItem item)
+        private void OpenInExplorer(ObservableFileSystemItem item)
         {
             Process.Start("explorer.exe", Path.GetDirectoryName(item.FullPath));
         }
 
-        public DelegateCommand<FileSystemItem> OpenInExplorerCommand { get; }
-        public DelegateCommand<FileSystemItem> RenameCommand { get; }
+        public DelegateCommand<ObservableFileSystemItem> OpenInExplorerCommand { get; }
+        public DelegateCommand<ObservableFileSystemItem> RenameCommand { get; }
 
         public ObservableCollection<NavItem> NavItems { get; set; }
 
-        public ObservableCollection<FileSystemItem> TreeRoots { get; private set; }
+        public ObservableCollection<ObservableFileSystemItem> TreeRoots { get; private set; }
 
         #region Build
 
@@ -55,11 +56,11 @@ namespace Blogger
             }
         }
 
-        private FileSystemItem BuildTree(string rootDirectory)
+        private ObservableFileSystemItem BuildTree(string rootDirectory)
         {
             if (Directory.Exists(rootDirectory))
             {
-                var root = new FileSystemItem
+                var root = new ObservableFileSystemItem
                 {
                     Name = System.IO.Path.GetFileName(rootDirectory),
                     FullPath = rootDirectory,
@@ -73,17 +74,16 @@ namespace Blogger
             return null;
         }
 
-        private async void BuildDirectoryTree(FileSystemItem root)
+        private async void BuildDirectoryTree(ObservableFileSystemItem root)
         {
             try
             {
-                var orderInfo = await OrderManager.Instance.LoadOrder(root.FullPath);
+                var orderInfo = await _orderManager.LoadOrder(root.FullPath);
 
                 var dirs = Directory.GetDirectories(root.FullPath);
                 var files = Directory
                     .GetFiles(root.FullPath)
-                    .Remove(Path.Combine(root.FullPath, OrderManager.ORDER_FILE_NAME))
-                    .Where(x => IsIgnored(x) == false);
+                    .Where(x => IsIgnored(x) == false || x != Path.Combine(root.FullPath, OrderManager.ORDER_FILE_NAME));
 
                 var items = dirs.Concat(files).ToList();
                 items.Sort(
@@ -116,7 +116,7 @@ namespace Blogger
                     if (dirs.Contains(item))
                     {
                         var dirInfo = new DirectoryInfo(item);
-                        var newItem = new FileSystemItem
+                        var newItem = new ObservableFileSystemItem
                         {
                             Name = dirInfo.Name,
                             FullPath = item,
@@ -127,7 +127,7 @@ namespace Blogger
                     }
                     else if (files.Contains(item))
                     {
-                        var newItem = new FileSystemItem
+                        var newItem = new ObservableFileSystemItem
                         {
                             Name = System.IO.Path.GetFileName(item),
                             FullPath = item,
@@ -186,7 +186,7 @@ namespace Blogger
             dropInfo.Effects = DragDropEffects.Move;
         }
 
-        FileSystemItem FindRoot(FileSystemItem fileSystemItem)
+        ObservableFileSystemItem FindRoot(ObservableFileSystemItem fileSystemItem)
         {
             while (fileSystemItem.Parent != null)
             {
@@ -197,8 +197,8 @@ namespace Blogger
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            var sourceItem = dropInfo.Data as FileSystemItem;
-            var targetItem = dropInfo.TargetItem as FileSystemItem;
+            var sourceItem = dropInfo.Data as ObservableFileSystemItem;
+            var targetItem = dropInfo.TargetItem as ObservableFileSystemItem;
             if (sourceItem == targetItem)
             {
                 return;
@@ -230,7 +230,7 @@ namespace Blogger
                             index = index - 1;
                         }
                         parent.Items.Move(parent.Items.IndexOf(sourceItem), index);
-                        OrderManager.Instance.SaveOrder(
+                        _orderManager.SaveOrder(
                             parent.FullPath,
                             parent.Items.Select(x => x.FullPath)
                         );
@@ -274,7 +274,7 @@ namespace Blogger
             Application.Current.Shutdown();
         }
 
-        public void OpenFile(FileSystemItem item)
+        public void OpenFile(ObservableFileSystemItem item)
         {
             if (item.Type == ItemType.File && string.IsNullOrWhiteSpace(item.FullPath) == false)
             {
@@ -320,7 +320,7 @@ namespace Blogger
             }
         }
 
-        private bool CanChangeFileName(ObservableCollection<FileSystemItem> items)
+        private bool CanChangeFileName(ObservableCollection<ObservableFileSystemItem> items)
         {
             try
             {
@@ -344,9 +344,9 @@ namespace Blogger
         }
 
         private bool FindParent(
-            FileSystemItem itemToFind,
-            FileSystemItem root,
-            out FileSystemItem parent
+            ObservableFileSystemItem itemToFind,
+            ObservableFileSystemItem root,
+            out ObservableFileSystemItem parent
         )
         {
             if (root == itemToFind)

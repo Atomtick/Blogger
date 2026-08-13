@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
-namespace WinDiskBlogger
+﻿namespace WinDiskBlogger
 {
-    internal class OrderManager
+    public class OrderManager
     {
-        public static OrderManager Instance { get; private set; } = new OrderManager();
-
-        private OrderManager()
-        { }
-
         public const string ORDER_FILE_NAME = ".order";
 
         public async Task<Dictionary<string, int>> LoadOrder(string directoryPath)
