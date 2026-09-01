@@ -21,9 +21,9 @@ namespace WinDiskBlogger
     {
         public MainWindow()
         {
-            var viewModel = App.Container.Resolve<OrderManager>();
+            var orderManager = App.Container.Resolve<OrderManager>();
             InitializeComponent();
-            this.DataContext = viewModel;
+            this.DataContext = new MainWindowViewModel(orderManager);
         }
 
         private void TreeViewItem_RequestBringIntoView(

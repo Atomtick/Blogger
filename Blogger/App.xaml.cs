@@ -42,13 +42,11 @@ namespace WinDiskBlogger
                 return;
             }
             this.Properties["configs"] = new PrimitiveConfigSource("configs.db");
-
-
             Container.Register<OrderManager, OrderManager>();
-
-
-
+            MainWindow = new MainWindow();
+            MainWindow.ShowDialog();
             base.OnStartup(e);
+
             // 1. 在后台动态创建一个 TaskbarIcon
             var trayIcon = new Hardcodet.Wpf.TaskbarNotification.TaskbarIcon();
 

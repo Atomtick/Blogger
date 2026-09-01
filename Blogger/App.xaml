@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:WinDiskBlogger"
-    xmlns:tb="http://www.hardcodet.net/taskbar" StartupUri="./MainWindow.xaml.cs">
+    xmlns:tb="http://www.hardcodet.net/taskbar">
     <Application.Resources>
         <ResourceDictionary>
             <!--  定义全局字体别名：uri定位到文件，#后跟字体内部实际名称  -->

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
+using Atomtick.Configuration;
 using GongSolutions.Wpf.DragDrop;
 using WinDiskBlogger;
 
@@ -13,23 +14,30 @@ namespace Blogger
 {
     public partial class MainWindowViewModel : IDropTarget
     {
-        private readonly string[] _folders;
+        private readonly List<string> _folders;
         private readonly OrderManager _orderManager;
+        private readonly PrimitiveConfigSource _configSource;
 
         public MainWindowViewModel(OrderManager orderManager)
         {
+            _configSource = Application.Current.Properties["configs"] as PrimitiveConfigSource;
+            _orderManager = orderManager;
             _assembly = Assembly.GetExecutingAssembly();
-            _folders = JsonSerializer.Deserialize<string[]>(
-                File.ReadAllText(
-                    Path.Combine(Path.GetDirectoryName(_assembly.Location), "configs.json")
-                )
-            );
+
+            var folders = _configSource
+                .RootNodes.Single(x => x.Name == "Folders")
+                .ConfigItems.Select(x => x.Path);
+            _folders = new List<string>(8);
+            foreach (var folder in folders)
+            {
+                _folders.Add(_configSource.Read(_configSource.SelectConfigItem(folder)).ToString());
+            }
+
             TreeRoots = new ObservableCollection<ObservableFileSystemItem>();
             Build();
 
             OpenInExplorerCommand = new DelegateCommand<ObservableFileSystemItem>(OpenInExplorer);
             RenameCommand = new DelegateCommand<ObservableFileSystemItem>(Rename);
-            _orderManager = orderManager;
         }
 
         private void Rename(ObservableFileSystemItem item) { }
@@ -80,17 +88,18 @@ namespace Blogger
             {
                 var orderInfo = await _orderManager.LoadOrder(root.FullPath);
 
-                var dirs = Directory.GetDirectories(root.FullPath);
+                var dirs = Directory.GetDirectories(root.FullPath).Select(x => Path.GetFileName(x));
                 var files = Directory
                     .GetFiles(root.FullPath)
-                    .Where(x => IsIgnored(x) == false || x != Path.Combine(root.FullPath, OrderManager.ORDER_FILE_NAME));
+                    .Select(x => Path.GetFileName(x))
+                    .Where(x => IsIgnored(x) == false && x != OrderManager.ORDER_FILE_NAME);
 
                 var items = dirs.Concat(files).ToList();
                 items.Sort(
-                     (x, y) =>
+                    (x, y) =>
                     {
-                        bool xRet =  orderInfo.TryGetValue(x, out var xOrder);
-                        bool yRet =  orderInfo.TryGetValue(y, out var yOrder);
+                        bool xRet = orderInfo.TryGetValue(x, out var xOrder);
+                        bool yRet = orderInfo.TryGetValue(y, out var yOrder);
 
                         if (xRet && yRet)
                         {
@@ -113,27 +122,26 @@ namespace Blogger
 
                 foreach (var item in items)
                 {
-                    if (dirs.Contains(item))
+                    if (dirs.Contains(item)) // 如果是文件夹
                     {
-                        var dirInfo = new DirectoryInfo(item);
                         var newItem = new ObservableFileSystemItem
                         {
-                            Name = dirInfo.Name,
-                            FullPath = item,
+                            Name = item,
+                            FullPath = Path.Combine(root.FullPath, item),
                             Type = ItemType.Folder,
+                            Parent = root,
                         };
-                        newItem.Parent = root;
                         root.Items.Add(newItem);
                     }
-                    else if (files.Contains(item))
+                    else if (files.Contains(item)) // 如果是文件
                     {
                         var newItem = new ObservableFileSystemItem
                         {
-                            Name = System.IO.Path.GetFileName(item),
-                            FullPath = item,
+                            Name = item,
+                            FullPath = Path.Combine(root.FullPath, item),
                             Type = ItemType.File,
+                            Parent = root,
                         };
-                        newItem.Parent = root;
                         root.Items.Add(newItem);
                     }
                 }
@@ -225,15 +233,12 @@ namespace Blogger
                     if (success && parent != null)
                     {
                         int index = dropInfo.InsertIndex;
-                        if(index == parent.Items.Count())
+                        if (index == parent.Items.Count())
                         {
                             index = index - 1;
                         }
                         parent.Items.Move(parent.Items.IndexOf(sourceItem), index);
-                        _orderManager.SaveOrder(
-                            parent.FullPath,
-                            parent.Items.Select(x => x.FullPath)
-                        );
+                        _orderManager.SaveOrder(parent.FullPath, parent.Items.Select(x => x.Name));
                     }
                 }
 
@@ -260,7 +265,6 @@ namespace Blogger
                 //}
             }
         }
-
 
         public void RestartApp()
         {

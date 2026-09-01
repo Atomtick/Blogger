@@ -9,11 +9,5 @@ namespace Blogger.Models
         public ItemType ItemType { get; set; }
         public FileSystemItem Parent { get; set; }
         public List<FileSystemItem> SubItems { get; set; }
-
-        public static FileSystemItem[] Build(string rootFolder)
-        {
-
-
-        }
     }
 }
