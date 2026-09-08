@@ -40,11 +40,17 @@ namespace Blogger
             RenameCommand = new DelegateCommand<ObservableFileSystemItem>(Rename);
         }
 
-        private void Rename(ObservableFileSystemItem item) { }
+        private void Rename(ObservableFileSystemItem item)
+        {
+
+        }
 
         private void OpenInExplorer(ObservableFileSystemItem item)
         {
-            Process.Start("explorer.exe", Path.GetDirectoryName(item.FullPath));
+            if (item.Type == ItemType.File)
+                Process.Start("explorer.exe", Path.GetDirectoryName(item.FullPath));
+            else if (item.Type == ItemType.Folder)
+                Process.Start("explorer.exe", item.FullPath);
         }
 
         public DelegateCommand<ObservableFileSystemItem> OpenInExplorerCommand { get; }
