@@ -11,12 +11,12 @@
     xmlns:xp="clr-namespace:XamlPearls.Miscellaneous;assembly=XamlPearls"
     Name="self"
     Title="{Binding Title}"
+    Width="800"
+    Height="400"
     Closing="self_Closing"
     Icon="assets/blogger.ico"
     Loaded="self_Loaded"
-    ShowInTaskbar="False"
-    Width="800"
-    Height="400"
+    ShowInTaskbar="True"
     StateChanged="self_StateChanged"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -66,7 +66,7 @@
                         </i:Interaction.Triggers>
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="杂项">
+                <MenuItem Header="Misce">
                     <MenuItem Header="转换ICO">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="Click">
